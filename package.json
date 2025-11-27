@@ -1,21 +1,21 @@
 {
-  "name": "com.novaframework.unity.book",
-  "displayName": "NovaFramework-Unity Book",
-  "description": "NovaFramework-Unity Book Package",
+  "name": "com.novaframework.unity.installer",
+  "displayName": "NovaFramework.Installer",
+  "description": "The installer module on starting up for NovaFramework",
   "version": "1.0.1",
   "unity": "2018.3",
   "unityRelease": "0f1",
   "license": "MIT",
-  "keywords": [ "Unity", "NovaFramework", "Book" ],
+  "keywords": [ "Unity", "NovaFramework", "Installer" ],
   "author": {
     "name": "hurley",
     "email": "yoseasoft@163.com",
-    "url": "https://github.com/yoseasoft/com.novaframework.unity.book"
+    "url": "https://github.com/yoseasoft/com.novaframework.unity.installer"
   },
   "repository": {
-    "name": "com.novaframework.unity.book",
+    "name": "com.novaframework.unity.installer",
     "type": "git",
-    "url": "https://github.com/yoseasoft/com.novaframework.unity.book.git"
+    "url": "https://github.com/yoseasoft/com.novaframework.unity.installer.git"
   },
   "relatedPackages": {},
   "dependencies": {}
