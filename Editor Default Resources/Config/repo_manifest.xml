@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+    <!-- 环境参数设置 -->
+
+    <set name="REPO_URL" value="https://github.com/yoseasoft"/>
+
     <!-- 插件包配置清单 -->
-    
+
     <!-- 基础引擎库 -->
-    <package name="com.yoseasoft.gooasset" displayName="GooAsset" description="Goo资源管理框架" required="true">
+    <package name="com.yoseasoft.gooasset" displayName="GooAsset" title="Goo资源管理框架" required="true">
         <git-repository url="https://github.com/yoseasoft/GooAsset.git"/>
     </package>
-    <package name="com.yoseasoft.novaframework" displayName="NovaFramework" description="Nova引擎框架" required="true">
+    <package name="com.yoseasoft.novaframework" displayName="NovaFramework" title="Nova引擎框架" required="true">
         <git-repository url="https://github.com/yoseasoft/NovaFramework.git"/>
         <dependencies>
             <reference-package name="com.yoseasoft.gooasset"/>
             <reference-package name="com.novaframework.unity.unitask"/>
         </dependencies>
     </package>
-    <package name="com.novaframework.unity.core.configure" displayName="NovaFramework.Configure" description="Nova引擎配置核心库" required="true"> 
+    <package name="com.novaframework.unity.core.configure" displayName="NovaFramework.Configure" title="Nova引擎配置核心库" required="true"> 
         <git-repository url="https://github.com/yoseasoft/com.novaframework.unity.core.configure.git"/>
     </package>
-    <package name="com.novaframework.unity.core.boot" displayName="NovaFramework.Boot" description="Nova引擎启动核心库" required="true">
+    <package name="com.novaframework.unity.core.boot" displayName="NovaFramework.Boot" title="Nova引擎启动核心库" required="true">
         <git-repository url="https://github.com/yoseasoft/com.novaframework.unity.core.boot.git"/>
         <dependencies>
             <reference-package name="com.novaframework.unity.core.configure"/>
@@ -24,53 +28,70 @@
     </package>
 
     <!-- 第三方工具库 -->
-    <package name="com.novaframework.unity.unitask" displayName="NovaFramework.UniTask" description="UniTask核心库">
+    <package name="com.novaframework.unity.unitask" displayName="NovaFramework.UniTask" title="UniTask核心库">
         <git-repository url="https://github.com/yoseasoft/com.novaframework.unity.unitask.git"/>
     </package>
-    <package name="com.novaframework.unity.litjson" displayName="NovaFramework.LitJson" description="LitJson核心库">
+    <package name="com.novaframework.unity.litjson" displayName="NovaFramework.LitJson" title="LitJson核心库">
         <git-repository url="https://github.com/yoseasoft/com.novaframework.unity.litjson.git"/>
     </package>
-    <package name="com.novaframework.unity.luban" displayName="NovaFramework.Luban" description="Luban核心库">
+    <package name="com.novaframework.unity.luban" displayName="NovaFramework.Luban" title="Luban核心库">
         <git-repository url="https://github.com/yoseasoft/com.novaframework.unity.luban.git"/>
     </package>
-    <package name="com.novaframework.unity.protobuf" displayName="NovaFramework.Protobuf" description="Protobuf核心库">
+    <package name="com.novaframework.unity.protobuf" displayName="NovaFramework.Protobuf" title="Protobuf核心库">
         <git-repository url="https://github.com/yoseasoft/com.novaframework.unity.protobuf.git"/>
     </package>
-    <package name="com.novaframework.unity.streambuf" displayName="NovaFramework.Streambuf" description="Streambuf核心库">
+    <package name="com.novaframework.unity.streambuf" displayName="NovaFramework.Streambuf" title="Streambuf核心库">
         <git-repository url="https://github.com/yoseasoft/com.novaframework.unity.streambuf.git"/>
     </package>
-    <package name="com.novaframework.unity.fairygui" displayName="NovaFramework.FairyGUI" description="FairyGUI核心库">
+    <package name="com.novaframework.unity.fairygui" displayName="NovaFramework.FairyGUI" title="FairyGUI核心库">
         <git-repository url="https://github.com/yoseasoft/com.novaframework.unity.litjson.git"/>
     </package>
-    
+
+    <!-- 教程实例库 -->
+    <package name="com.gameframework.unity.sample"
+             displayName="GameFramework.Sample"
+             title="Nova教程库"
+             description="针对Nova框架的特性以及调度方式，提供一些教程案例作为使用入门的参考">
+        <git-repository url="https://github.com/yoseasoft/com.gameframework.unity.sample.git"/>
+        <assembly-definition name="Game.Sample"/>
+    </package>
+
     <!-- 模块支持库 -->
     <package name="com.gameframework.unity.module.protocol.protobuf"
              displayName="GameFramework.Module.Protocol.Protobuf"
-             description="Protobuf服务模块">
+             title="Protobuf服务模块"
+             description="提供基于Protobuf协议解析及操作码注册管理">
         <git-repository url="https://github.com/yoseasoft/com.gameframework.unity.module.protocol.protobuf.git"/>
+        <assembly-definition name="Game.Module.Protocol.Protobuf"/>
         <dependencies>
             <reference-package name="com.novaframework.unity.protobuf"/>
         </dependencies>
     </package>
     <package name="com.gameframework.unity.module.protocol.streambuf"
              displayName="GameFramework.Module.Protocol.Streambuf"
-             description="Streambuf服务模块">
+             title="Streambuf服务模块"
+             description="提供基于Streambuf协议解析及操作码注册管理">
         <git-repository url="https://github.com/yoseasoft/com.gameframework.unity.module.protocol.streambuf.git"/>
+        <assembly-definition name="Game.Module.Protocol.Streambuf"/>
         <dependencies>
             <reference-package name="com.novaframework.unity.streambuf"/>
         </dependencies>
     </package>
     <package name="com.gameframework.unity.module.view.fairygui"
              displayName="GameFramework.Module.View.FairyGUI"
-             description="FairyGUI服务模块">
+             title="FairyGUI服务模块"
+             description="封装FairyGUI窗口加载及组件访问服务，对外提供UI操作的便捷访问接口">
         <git-repository url="https://github.com/yoseasoft/com.gameframework.unity.module.view.fairygui.git"/>
+        <assembly-definition name="Game.Module.View.Fairygui"/>
         <dependencies>
             <reference-package name="com.novaframework.unity.fairygui"/>
         </dependencies>
     </package>
     <package name="com.gameframework.unity.module.view.ugui"
              displayName="GameFramework.Module.View.UGUI"
-             description="UGUI服务模块">
+             title="UGUI服务模块"
+             description="封装UGUI窗口加载及组件访问服务，对外提供UI操作的便捷访问接口">
         <git-repository url="https://github.com/yoseasoft/com.gameframework.unity.module.view.ugui.git"/>
+        <assembly-definition name="Game.Module.View.Ugui"/>
     </package>
 </root>

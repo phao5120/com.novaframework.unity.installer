@@ -41,7 +41,7 @@ namespace NovaEngine.Installer
         static string gitPackageConfigPath = gitSaveRootDir + "/gitPackageConfig.txt";
         static string manifestJsonPath = Path.Combine(UnityEngine.Application.dataPath, "../Packages/manifest.json");
 
-        [MenuItem("Nova/Install/Install Git Repository Packages")]
+        [MenuItem("Nova/Install/Sync Git Repository Packages")]
         public static void InstallGitPackages()
         {
             string packagePath = "";

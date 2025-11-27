@@ -126,7 +126,7 @@ namespace NovaEngine.Installer
         // 滚动视图位置
         private Vector2 _scrollPosition;
 
-        [MenuItem("Tools/底层框架配置")]
+        [MenuItem("Nova/Install/Install Packages")]
         public static void ShowWindow()
         {
             var window = GetWindow<PackageWindow>("底层框架配置管理");
