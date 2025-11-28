@@ -24,6 +24,8 @@
 
 using System.IO;
 
+using UnityEngine;
+
 namespace NovaEngine.Installer
 {
     /// 编辑环境下的工具箱辅助类
@@ -104,11 +106,11 @@ namespace NovaEngine.Installer
                 bool success = ExecuteGitCommand("--version", workingDir, out string output, out string error);
                 if (success)
                 {
-                    Logger.Info($"Git版本：{output}");
+                    Debug.Log($"Git版本：{output}");
                 }
                 else
                 {
-                    Logger.Error($"获取Git版本失败：{error}");
+                    Debug.LogError($"获取Git版本失败：{error}");
                 }
             }
 
@@ -122,11 +124,11 @@ namespace NovaEngine.Installer
                 bool success = ExecuteGitCommand(cmd, workingDir, out string output, out string error);
                 if (success)
                 {
-                    Logger.Info($"git clone {httpUrl} 成功： {output}");
+                    Debug.Log($"git clone {httpUrl} 成功： {output}");
                 }
                 else
                 {
-                    Logger.Error($"git clone {httpUrl} 失败： {error}");
+                    Debug.LogError($"git clone {httpUrl} 失败： {error}");
                 }
             }
 
@@ -139,11 +141,11 @@ namespace NovaEngine.Installer
                 bool success = ExecuteGitCommand(cmd, workingDir, out string output, out string error);
                 if (success)
                 {
-                    Logger.Info($"git pull {workingDir} 成功： {output}");
+                    Debug.Log($"git pull {workingDir} 成功： {output}");
                 }
                 else
                 {
-                    Logger.Error($"git pull {workingDir} 失败： {error}");
+                    Debug.LogError($"git pull {workingDir} 失败： {error}");
                 }
             }
         }

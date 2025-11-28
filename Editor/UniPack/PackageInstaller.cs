@@ -27,12 +27,14 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using UnityEditor;
+using UnityEngine;
 
 namespace NovaEngine.Installer
 {
     /// <summary>
     /// 包安装器对象类，用于安装插件包及包管理器的注册服务<br/>
     /// 安装的插件包位于本地工程根目录下的 `NovaFrameworkData` 文件夹中，
+    /// 安装完成后将同步修改 `Packages/manifest.json` 包管理器文件
     /// </summary>
     internal static class PackageInstaller
     {
@@ -56,12 +58,12 @@ namespace NovaEngine.Installer
                     packagePath = Path.Combine(gitSaveRootDir, packageName);
                     if (Directory.Exists(packagePath))
                     {
-                        Logger.Info($"已经存在 {packageName} 更新");
+                        Debug.Log($"已经存在 {packageName} 更新");
                         UpdateSingleGitPackage(packageName);
                     }
                     else
                     {
-                        Logger.Info($"克隆 {packageName} ");
+                        Debug.Log($"克隆 {packageName} ");
                         InstallSingleGitPackage(packageName);
                     }
 
@@ -70,10 +72,10 @@ namespace NovaEngine.Installer
             }
             else
             {
-                Logger.Error($"配置文件不存在 ：{gitPackageConfigPath}");
+                Debug.LogError($"配置文件不存在 ：{gitPackageConfigPath}");
             }
 
-            Logger.Info("修改ManifestJson");
+            Debug.Log("修改ManifestJson");
             //ModifyManifestJson();
         }
 
@@ -108,7 +110,7 @@ namespace NovaEngine.Installer
             }
             else
             {
-                Logger.Error($"文件不存在 {gitPackageConfigPath}");
+                Debug.LogError($"文件不存在 {gitPackageConfigPath}");
             }
 
             return null;
@@ -125,7 +127,7 @@ namespace NovaEngine.Installer
                 string packageName = GetPackageName(contentArray[1]);
                 packageDict.Add(line, packageName);
 
-                Logger.Info(line + " " + packageName);
+                Debug.Log(line + " " + packageName);
             }
 
             string[] jsonContent = File.ReadAllLines(manifestJsonPath, System.Text.Encoding.UTF8);
@@ -175,13 +177,13 @@ namespace NovaEngine.Installer
             int colonIndex = line.IndexOf(':');
             if (colonIndex == -1)
             {
-                Logger.Error("未找到冒号，格式异常");
+                Debug.LogError("未找到冒号，格式异常");
                 return packageName;
             }
             int startQuoteIndex = line.IndexOf('"', colonIndex + 1);
             if (startQuoteIndex == -1)
             {
-                Logger.Error("未找到包名起始双引号");
+                Debug.LogError("未找到包名起始双引号");
                 return packageName;
             }
 
@@ -189,13 +191,13 @@ namespace NovaEngine.Installer
             int endQuoteIndex = line.IndexOf('"', startQuoteIndex + 1);
             if (endQuoteIndex == -1)
             {
-                Logger.Error("未找到包名结束双引号");
+                Debug.LogError("未找到包名结束双引号");
                 return packageName;
             }
 
             // 步骤3：截取并输出目标包名
             packageName = line.Substring(startQuoteIndex + 1, endQuoteIndex - startQuoteIndex - 1);
-            Logger.Info("提取的包名：" + packageName);
+            Debug.Log("提取的包名：" + packageName);
 
             return packageName;
         }

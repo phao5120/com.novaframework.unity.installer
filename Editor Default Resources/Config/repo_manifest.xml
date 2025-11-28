@@ -34,6 +34,9 @@
     <package name="com.novaframework.unity.litjson" displayName="NovaFramework.LitJson" title="LitJson核心库">
         <git-repository url="https://github.com/yoseasoft/com.novaframework.unity.litjson.git"/>
     </package>
+    <package name="com.novaframework.unity.sharpziplib" displayName="NovaFramework.SharpZipLib" title="SharpZipLib核心库">
+        <git-repository url="https://github.com/yoseasoft/com.novaframework.unity.sharpziplib.git"/>
+    </package>
     <package name="com.novaframework.unity.luban" displayName="NovaFramework.Luban" title="Luban核心库">
         <git-repository url="https://github.com/yoseasoft/com.novaframework.unity.luban.git"/>
     </package>
@@ -54,6 +57,18 @@
              description="针对Nova框架的特性以及调度方式，提供一些教程案例作为使用入门的参考">
         <git-repository url="https://github.com/yoseasoft/com.gameframework.unity.sample.git"/>
         <assembly-definition name="Game.Sample"/>
+    </package>
+
+    <!-- 游戏启动器 -->
+    <package name="com.gameframework.unity.launcher"
+             displayName="GameFramework.Launcher"
+             title="Nova启动模版"
+             description="针对Nova框架提供一套默认的启动流程代码模版，可以基于这套模版定制个性化的启动流程">
+        <git-repository url="https://github.com/yoseasoft/com.gameframework.unity.launcher.git"/>
+        <dependencies>
+            <reference-package name="com.novaframework.unity.core.configure"/>
+            <reference-package name="com.novaframework.unity.sharpziplib"/>
+        </dependencies>
     </package>
 
     <!-- 模块支持库 -->
