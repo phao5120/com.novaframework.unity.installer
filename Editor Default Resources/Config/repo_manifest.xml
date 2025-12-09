@@ -7,7 +7,7 @@
     <!-- 插件包配置清单 -->
 
     <!-- 基础引擎库 -->
-    <package name="com.yoseasoft.gooasset" displayName="GooAsset" title="Goo资源管理框架" required="true">
+    <package name="com.yoseasoft.gooasset" displayName="GooAsset" title="Goo资产管理框架" required="true">
         <git-repository url="https://github.com/yoseasoft/GooAsset.git"/>
     </package>
     <package name="com.yoseasoft.novaframework" displayName="NovaFramework" title="Nova引擎框架" required="true">
@@ -108,5 +108,16 @@
              description="封装UGUI窗口加载及组件访问服务，对外提供UI操作的便捷访问接口">
         <git-repository url="https://github.com/yoseasoft/com.gameframework.unity.module.view.ugui.git"/>
         <assembly-definition name="Game.Module.View.Ugui"/>
+    </package>
+
+    <package name="com.gameframework.unity.module.asset.namesearcher"
+             displayName="GameFramework.Module.Asset.NameSearcher"
+             title="Goo资产名称检索器"
+             description="提供基于Goo资产打包规则下的名称检索，对外提供基于名称进行资源访问的扩展操作的便捷访问接口">
+        <git-repository url="https://github.com/yoseasoft/com.gameframework.unity.module.asset.namesearcher.git"/>
+        <assembly-definition name="Game.Module.Asset.NameSearcher"/>
+        <dependencies>
+            <reference-package name="com.yoseasoft.gooasset"/>
+        </dependencies>
     </package>
 </root>
