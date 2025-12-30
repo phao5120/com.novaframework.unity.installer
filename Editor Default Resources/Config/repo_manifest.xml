@@ -118,6 +118,7 @@
         <assembly-definition name="Game.Module.Asset.NameSearcher"/>
         <dependencies>
             <reference-package name="com.yoseasoft.gooasset"/>
+            <reference-package name="com.novaframework.unity.litjson"/>
         </dependencies>
     </package>
 </root>
