@@ -67,7 +67,7 @@
     <package name="com.novaframework.unity.fairygui"
              displayName="NovaFramework.FairyGUI"
              title="FairyGUI工具库">
-        <git-repository url="%REPO_URL%/com.novaframework.unity.litjson.git"/>
+        <git-repository url="%REPO_URL%/com.novaframework.unity.fairygui.git"/>
     </package>
 
     <!-- 教程实例库 -->
