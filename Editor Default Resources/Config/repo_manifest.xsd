@@ -23,6 +23,8 @@
 
     <xs:simpleType name="assembly-loadable-strategy-type">
         <xs:restriction base="xs:string">
+            <xs:enumeration value="Module"/>
+            <xs:enumeration value="Game"/>
             <xs:enumeration value="Shared"/>
             <xs:enumeration value="Hotfix"/>
             <xs:enumeration value="Compile"/>
@@ -41,7 +43,7 @@
             <xs:element name="assembly-definition" minOccurs="0" maxOccurs="1">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="loadable-strategy" type="assembly-loadable-strategy-type" minOccurs="0" maxOccurs="unbounded" nillable="false"/>
+                        <xs:element name="loadable-strategy" type="assembly-loadable-strategy-type" minOccurs="1" maxOccurs="unbounded" nillable="false"/>
                     </xs:sequence>
                     <xs:attribute name="name" type="xs:string" use="required"/>
                     <xs:attribute name="order" type="xs:integer" use="required"/>

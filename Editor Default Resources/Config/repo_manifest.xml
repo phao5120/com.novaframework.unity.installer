@@ -88,6 +88,7 @@
              description="针对Nova框架的特性以及调度方式，提供一些教程案例作为使用入门的参考">
         <git-repository url="%REPO_URL%/com.gameframework.unity.sample.git"/>
         <assembly-definition name="Game.Sample" order="211">
+            <loadable-strategy>Module</loadable-strategy>
             <loadable-strategy>Compile</loadable-strategy>
             <loadable-strategy>Tutorial</loadable-strategy>
         </assembly-definition>
@@ -111,7 +112,9 @@
              title="Protobuf服务模块"
              description="提供基于Protobuf协议解析及操作码注册管理">
         <git-repository url="%REPO_URL%/com.gameframework.unity.module.protocol.protobuf.git"/>
-        <assembly-definition name="Game.Module.Protocol.Protobuf" order="111"/>
+        <assembly-definition name="Game.Module.Protocol.Protobuf" order="111">
+            <loadable-strategy>Module</loadable-strategy>
+        </assembly-definition>
         <dependencies>
             <reference-package>com.novaframework.unity.protobuf</reference-package>
         </dependencies>
@@ -124,7 +127,9 @@
              title="Streambuf服务模块"
              description="提供基于Streambuf协议解析及操作码注册管理">
         <git-repository url="%REPO_URL%/com.gameframework.unity.module.protocol.streambuf.git"/>
-        <assembly-definition name="Game.Module.Protocol.Streambuf" order="112"/>
+        <assembly-definition name="Game.Module.Protocol.Streambuf" order="112">
+            <loadable-strategy>Module</loadable-strategy>
+        </assembly-definition>
         <dependencies>
             <reference-package>com.novaframework.unity.streambuf</reference-package>
         </dependencies>
@@ -138,6 +143,7 @@
              description="封装FairyGUI窗口加载及组件访问服务，对外提供UI操作的便捷访问接口">
         <git-repository url="%REPO_URL%/com.gameframework.unity.module.view.fairygui.git"/>
         <assembly-definition name="Game.Module.View.Fairygui" order="121">
+            <loadable-strategy>Module</loadable-strategy>
             <loadable-strategy>Compile</loadable-strategy>
         </assembly-definition>
         <dependencies>
@@ -150,7 +156,9 @@
              title="UGUI服务模块"
              description="封装UGUI窗口加载及组件访问服务，对外提供UI操作的便捷访问接口">
         <git-repository url="%REPO_URL%/com.gameframework.unity.module.view.ugui.git"/>
-        <assembly-definition name="Game.Module.View.Ugui" order="122"/>
+        <assembly-definition name="Game.Module.View.Ugui" order="122">
+            <loadable-strategy>Module</loadable-strategy>
+        </assembly-definition>
         <assets-path>GUI_PATH</assets-path>
     </package>
 
@@ -160,7 +168,9 @@
              title="Goo资产名称检索器"
              description="提供基于Goo资产打包规则下的名称检索，对外提供基于名称进行资源访问的扩展操作的便捷访问接口">
         <git-repository url="%REPO_URL%/com.gameframework.unity.module.asset.namesearcher.git"/>
-        <assembly-definition name="Game.Module.Asset.NameSearcher" order="131"/>
+        <assembly-definition name="Game.Module.Asset.NameSearcher" order="131">
+            <loadable-strategy>Module</loadable-strategy>
+        </assembly-definition>
         <dependencies>
             <reference-package>com.yoseasoft.gooasset</reference-package>
             <reference-package>com.novaframework.unity.litjson</reference-package>
