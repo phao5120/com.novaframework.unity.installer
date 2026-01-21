@@ -28,7 +28,7 @@
             <reference-package>com.novaframework.unity.unitask</reference-package>
         </dependencies>
     </package>
-    <package name="com.novaframework.unity.core.configure" displayName="NovaFramework.Configure" title="Nova引擎配置核心库" required="true"> 
+    <package name="com.novaframework.unity.core.configure" displayName="NovaFramework.Configure" title="Nova引擎配置核心库" required="true">
         <git-repository url="%REPO_URL%/com.novaframework.unity.core.configure.git"/>
     </package>
     <package name="com.novaframework.unity.core.boot" displayName="NovaFramework.Boot" title="Nova引擎启动核心库" required="true">
