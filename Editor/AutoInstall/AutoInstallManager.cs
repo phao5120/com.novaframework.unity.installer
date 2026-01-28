@@ -297,16 +297,26 @@ namespace NovaFramework.Editor.Installer
         {
             if (currentIndex >= packagesList.Count)
             {
-                // 所有包已添加到manifest.json，不需要显式调用ResolveAllPackages
-                // GitManager.InstallPackage 会自动触发包管理器更新
-                AddLogToProgress("所有包配置完成...");
+                // 所有包已添加到manifest.json，现在需要刷新包管理器以加载新程序集
+                AddLogToProgress("所有包配置完成，正在刷新包管理器...");
                 
-                // 刷新资源
-                AddLogToProgress("正在刷新资源...");
-               
-                // 直接执行下一步
-                CreateDirectories();
+                // 强制刷新包管理器
+                Client.Resolve();
                 
+                // 延迟刷新资源
+                EditorApplication.delayCall += () =>
+                {
+                    AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
+                    
+                    // 延迟一段时间确保程序集完全加载
+                    EditorApplication.delayCall += () =>
+                    {
+                        System.Threading.Thread.Sleep(2000); // 等待2秒确保程序集加载
+                        
+                        // 直接执行下一步
+                        CreateDirectories();
+                    };
+                };                
                 return;
             }
             
@@ -478,6 +488,9 @@ namespace NovaFramework.Editor.Installer
                 DataManager.SaveSystemVariables(systemVariables);
                 AddLogToProgress("已保存系统变量配置");
 
+                // 强制刷新资源以确保新目录被Unity识别
+                AssetDatabase.Refresh();
+
                 // 延迟继续下一步，让UI有机会更新
                 EditorApplication.delayCall += () =>
                 {
@@ -583,9 +596,10 @@ namespace NovaFramework.Editor.Installer
                     AddLogToProgress($"AOT源目录不存在，跳过DLL复制");
                     Debug.LogWarning($"AOT源目录不存在: {sourceAotPath}，跳过DLL.byte复制");
                 }
-               
-
                 
+                // 强制刷新资源以确保新文件被Unity识别
+                AssetDatabase.Refresh();
+
                 // 延迟生成Nova框架配置，让UI有机会更新
                 EditorApplication.delayCall += () =>
                 {
@@ -684,6 +698,11 @@ namespace NovaFramework.Editor.Installer
                                 {
                                     UserSettings.SetBool(Constants.NovaFramework_Installer_INSTALLER_COMPLETE_KEY, true);
                                     SetStepToProgress(11); // Complete 对应值为11
+                                    
+                                    // 在完成之前最后刷新一次
+                                    AssetDatabase.Refresh();
+                                    
+                                    // 最后调用Client.Resolve()确保所有更改都被识别
                                     Client.Resolve();
                                 };
                             };

@@ -123,8 +123,14 @@ namespace NovaFramework.Editor.Installer
 
                 Debug.Log($"成功添加包 {packageName} 到manifest.json: {packageRef}");
 
-                // 注释掉此处的Client.Resolve()调用，统一在所有包都添加完毕后调用
-                // UnityEditor.PackageManager.Client.Resolve();
+                // 强制刷新AssetDatabase以确保Unity识别更改
+                AssetDatabase.Refresh();
+                
+                // 触发包管理器更新以加载新包
+                UnityEditor.PackageManager.Client.Resolve();
+                
+                // 延迟一段时间确保Unity有时间处理包解析
+                System.Threading.Thread.Sleep(2000);
             }
             catch (Exception e)
             {
@@ -237,8 +243,14 @@ namespace NovaFramework.Editor.Installer
 
                 Debug.Log($"成功从manifest.json移除包 {packageName}");
 
-                // 注释掉此处的Client.Resolve()调用，统一在所有包都处理完毕后调用
-                // UnityEditor.PackageManager.Client.Resolve();
+                // 强制刷新AssetDatabase以确保Unity识别更改
+                AssetDatabase.Refresh();
+                
+                // 触发包管理器更新以重新加载包列表
+                UnityEditor.PackageManager.Client.Resolve();
+                
+                // 延迟一段时间确保Unity有时间处理包解析
+                System.Threading.Thread.Sleep(2000);
             }
             catch (Exception e)
             {
