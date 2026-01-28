@@ -54,7 +54,7 @@ namespace NovaFramework.Editor.Installer
                 WaitForFileSystemStable(() =>
                 {
                     string packageSavePath = Path.Combine(SAVE_ROOT_PARH, package.name).Replace("\\", "/");
-                    PackageManifestHandler.AddPackageToManifest(packageSavePath, package.name);
+                    PackageManifestUtils.AddPackageToManifest(package.name, packageSavePath);
                 });
             }
             else
@@ -67,7 +67,7 @@ namespace NovaFramework.Editor.Installer
         {
             string folderPath = Path.Combine(Constants.FRAMEWORK_REPO_PATH, oldPkgName);
             ForceDeleteDirectory(folderPath);
-            PackageManifestHandler.RemovePackageFromManifest(oldPkgName);
+            PackageManifestUtils.RemovePackageFromManifest(oldPkgName);
         }
 
         /// <summary>
