@@ -46,7 +46,7 @@ namespace NovaFramework.Editor.Installer
                 Directory.CreateDirectory(destinationPath);
             }
             
-            bool cloneSuccess = GitHelper.CloneRepository(package.gitUrl, destinationPath);
+            bool cloneSuccess = GitUtils.CloneRepository(package.gitUrl, destinationPath);
             
             if (cloneSuccess)
             {
@@ -257,7 +257,7 @@ namespace NovaFramework.Editor.Installer
             if (Directory.Exists(packagePath))
             {
                 // 如果包已存在，使用pull更新
-                if (!GitHelper.PullRepository(packagePath))
+                if (!GitUtils.PullRepository(packagePath))
                 {
                     Debug.LogError($"包 {packageName} 更新失败");
                 }
