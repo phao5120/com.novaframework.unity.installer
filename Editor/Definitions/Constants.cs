@@ -31,9 +31,13 @@ namespace NovaFramework.Editor.Installer
     /// </summary>
     public static class Constants
     {
+        /// <summary>
+        /// 安装模块的本地包名
+        /// </summary>
+        public const string LocalPackageNameOfInstallerModule = @"com.novaframework.unity.installer";
 
         // 默认资源路径
-        private const string USER_INSTALLER_ROOT_PATH = Context.LocalInstallPathOfNovaFrameworkRepositoryFolder + @"com.novaframework.unity.installer";
+        private const string USER_INSTALLER_ROOT_PATH = ContextSettings.LocalInstallPathOfNovaFrameworkRepositoryFolder + LocalPackageNameOfInstallerModule;
        
         // 默认资源路径
         public static string DEFAULT_INSTALLER_ROOT_PATH
@@ -47,16 +51,7 @@ namespace NovaFramework.Editor.Installer
                 else
                 {
                     // 使用AssetDatabase查找com.novaframework.unity.installer文件夹
-                    string installerPath = FindInstallerFolderPathUsingAssetDatabase();
-                    if (!string.IsNullOrEmpty(installerPath))
-                    {
-                        return installerPath;
-                    }
-                    else
-                    {
-                        // 默认路径
-                        return "Assets/3rd/com.novaframework.unity.installer";
-                    }
+                    return FindInstallerFolderPathUsingAssetDatabase();
                 }
                 
             }
@@ -66,7 +61,7 @@ namespace NovaFramework.Editor.Installer
         private static string FindInstallerFolderPathUsingAssetDatabase()
         {
             // 使用AssetDatabase查找所有包含"com.novaframework.unity.installer"的路径
-            string[] allGuids = AssetDatabase.FindAssets("com.novaframework.unity.installer", null);
+            string[] allGuids = AssetDatabase.FindAssets(LocalPackageNameOfInstallerModule, null);
             
             foreach (string guid in allGuids)
             {
@@ -75,7 +70,7 @@ namespace NovaFramework.Editor.Installer
                 if (Directory.Exists(path))
                 {
                     // 检查文件夹名称是否完全匹配
-                    if (Path.GetFileName(path) == "com.novaframework.unity.installer")
+                    if (Path.GetFileName(path) == LocalPackageNameOfInstallerModule)
                     {
                         return path;
                     }
@@ -107,8 +102,8 @@ namespace NovaFramework.Editor.Installer
         public const string ASSEMBLY_CONFIG_KEY = "AssemblyConfig.Configs";
         
         //用于git更新的包名
-        public const string INSTALLER_PACKAGE_NAME = "com.novaframework.unity.installer";
-        public const string COMMON_PACKAGE_NAME = "com.novaframework.unity.core.common";
+        public const string INSTALLER_PACKAGE_NAME = LocalPackageNameOfInstallerModule;
+        public const string COMMON_PACKAGE_NAME = ContextSettings.LocalPackageNameOfCommonModule;
         
         //获取UserSetting中package数据的key
         public const string PACKAGE_KEY_NAME = "PACKAGE_KEY_NAME";
