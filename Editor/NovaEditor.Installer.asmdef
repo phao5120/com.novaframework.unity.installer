@@ -2,8 +2,7 @@
     "name": "NovaEditor.Installer",
     "rootNamespace": "",
     "references": [
-        "NovaEditor.Common",
-        "NovaFramework.Common"
+        "GUID:420ca5e72cafc6a4c9ed4cbd204f46f7"
     ],
     "includePlatforms": [
         "Editor"

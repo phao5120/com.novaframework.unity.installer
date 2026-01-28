@@ -27,7 +27,7 @@ using UnityEngine;
 
 namespace NovaFramework.Editor.Installer
 {
-    public class PackageConfigurationView
+    internal class PackageConfigurationView
     {
         private Vector2 _scrollPosition;
         private Vector2 _selectedPackagesScrollPosition;
@@ -104,7 +104,7 @@ namespace NovaFramework.Editor.Installer
                     GUI.enabled = true; // 恢复交互
                     
                     // 显示包信息，使用工具提示
-                    string packageText = $"<color=#9E9E9E>{package.name}</color> <color=#FF9800>(必需)</color>"; // 按规范标注必需包
+                    string packageText = $"<color=#9E9E9E>{package.title}</color> <color=#FF9800>(必需)</color>"; // 按规范标注必需包
                     GUIContent label = new GUIContent(packageText, package.description);
                     GUILayout.Label(label, RichTextUtils.GetRichTextStyle(Color.white, 12), GUILayout.ExpandWidth(true));
                 }
@@ -123,7 +123,7 @@ namespace NovaFramework.Editor.Installer
                     }
                     
                     // 显示包信息，使用工具提示
-                    string packageText = $"<color=#E0E0E0>{package.name}</color>";
+                    string packageText = $"<color=#E0E0E0>{package.title}</color>";
                     GUIContent label = new GUIContent(packageText, package.description);
                     GUILayout.Label(label, RichTextUtils.GetRichTextStyle(Color.white, 12), GUILayout.ExpandWidth(true));
                 }
@@ -146,6 +146,11 @@ namespace NovaFramework.Editor.Installer
                     // 将包的详细信息包装在一个垂直区域中
                     EditorGUILayout.BeginVertical("box"); // 使用box样式包围详细信息
                     EditorGUI.indentLevel++;
+                    
+                    if (!string.IsNullOrEmpty(package.name))
+                    {
+                        GUILayout.Label("<color=#FFFFFF>Name:</color> <color=#03A9F4>" + package.name + "</color>", RichTextUtils.GetRichTextStyle(Color.white, 10));
+                    }
                     
                     if (!string.IsNullOrEmpty(package.displayName) && package.displayName != package.name)
                     {
@@ -223,6 +228,8 @@ namespace NovaFramework.Editor.Installer
                 Debug.Log("保存选择");
                 GitManager.HandleSelectPackages(DataManager.LoadPersistedSelectedPackages(), PackageManager.GetSelectedPackageNames());
                 DataManager.SavePersistedSelectedPackages(PackageManager.GetSelectedPackageNames());
+                // 注释掉此处的Client.Resolve()调用，统一在所有包都添加完毕后调用
+                UnityEditor.PackageManager.Client.Resolve();
             }
             
             GUIStyle updateButtonStyle = RichTextUtils.GetButtonTextOnlyStyle(Color.yellow);
@@ -292,8 +299,9 @@ namespace NovaFramework.Editor.Installer
                         var existPackage = selectedPackages.Find(p => p.name == repulsionPkgName);
                         if (existPackage != null)
                         {
+                            PackageInfo repulsionPackageInfo = PackageManager.GetPackageInfoByName(repulsionPkgName);
                             EditorUtility.DisplayDialog("互斥冲突",
-                                $"【{package.name}】与【{repulsionPkgName}】 互斥",
+                                $"【{package.title}】与【{repulsionPackageInfo.title}】 互斥",
                                 "确定");
                             return false;
                         }
@@ -311,8 +319,10 @@ namespace NovaFramework.Editor.Installer
                             var existPackage = selectedPackages.Find(p => p.name == repulsionPkgName);
                             if (existPackage != null)
                             {
+                                PackageInfo depPackageInfo = PackageManager.GetPackageInfoByName(depName);
+                                
                                 EditorUtility.DisplayDialog("互斥冲突",
-                                    $"【{depName}】与【{repulsionPkgName}】 互斥",
+                                    $"【{package.title}】中引用的【{depPackageInfo.title}】与已勾选的【{existPackage.title}】 互斥",
                                     "确定");
                                 return false;
                             }
@@ -341,7 +351,7 @@ namespace NovaFramework.Editor.Installer
                     {
                         // 如果有其他选中的包依赖此包，则不允许取消选中
                         EditorUtility.DisplayDialog("依赖冲突",
-                            $"无法取消选中 【{package.displayName}】，因为 【{otherPackage.displayName}】 依赖于它。",
+                            $"无法取消选中 【{package.title}】，因为 【{otherPackage.title}】 依赖于它。",
                             "确定");
                         return false;
                     }
@@ -373,7 +383,7 @@ namespace NovaFramework.Editor.Installer
                 EditorGUILayout.BeginHorizontal("box");
                 
                 // 显示包名称，确保完整显示并支持工具提示
-                string packageText = $"<color=#FFFFFF>{package.displayName}</color>";
+                string packageText = $"<color=#FFFFFF>{package.title}</color>";
                 if (package.isRequired)
                 {
                     packageText += " <color=#FF9800>(必需)</color>"; // 标注必需包

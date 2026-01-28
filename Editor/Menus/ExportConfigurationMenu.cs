@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace NovaFramework.Editor.Installer
 {
-    public static class ExportConfigurationMenu
+    internal static class ExportConfigurationMenu
     {
         [MenuItem("Tools/导出配置 _F3", false, 1000)]
         public static void ExportConfiguration()
@@ -18,7 +18,7 @@ namespace NovaFramework.Editor.Installer
                 Dictionary<string, string> environmentDirectories = null;
                 try
                 {
-                    environmentDirectories = UserSettings.GetObject<Dictionary<string, string>>(Constants.DIRECTORY_CONFIG_KEY);
+                    environmentDirectories = UserSettings.GetObject<Dictionary<string, string>>(Constants.NovaFramework_Installer_DIRECTORY_CONFIG_KEY);
                 }
                 catch (Exception ex)
                 {
@@ -37,7 +37,7 @@ namespace NovaFramework.Editor.Installer
                 
                 try
                 {
-                    assemblyConfigs = UserSettings.GetObject<List<AssemblyDefinitionInfo>>(Constants.ASSEMBLY_CONFIG_KEY);
+                    assemblyConfigs = UserSettings.GetObject<List<AssemblyDefinitionInfo>>(Constants.NovaFramework_Installer_ASSEMBLY_CONFIG_KEY);
                 }
                 catch (Exception ex)
                 {
@@ -197,7 +197,7 @@ namespace NovaFramework.Editor.Installer
             Dictionary<string, string> environmentDirectories = null;
             try
             {
-                environmentDirectories = UserSettings.GetObject<Dictionary<string, string>>(Constants.DIRECTORY_CONFIG_KEY);
+                environmentDirectories = UserSettings.GetObject<Dictionary<string, string>>(Constants.NovaFramework_Installer_DIRECTORY_CONFIG_KEY);
             }
             catch (Exception e)
             {

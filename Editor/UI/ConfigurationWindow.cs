@@ -30,7 +30,7 @@ using UnityEngine.SceneManagement;
 
 namespace NovaFramework.Editor.Installer
 {
-    public class ConfigurationWindow : EditorWindow
+    internal class ConfigurationWindow : EditorWindow
     {
         private static ConfigurationWindow _window;
         

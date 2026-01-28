@@ -27,7 +27,7 @@ using UnityEngine;
 
 namespace NovaFramework.Editor.Installer
 {
-    public class AssemblyConfigurationView
+    internal class AssemblyConfigurationView
     {
         // 程序集配置相关
         private List<AssemblyDefinitionInfo> _assemblyConfigs;
@@ -147,7 +147,7 @@ namespace NovaFramework.Editor.Installer
                     }
                 }
                 
-                UserSettings.SetObject(Constants.ASSEMBLY_CONFIG_KEY, _assemblyConfigs);
+                UserSettings.SetObject(Constants.NovaFramework_Installer_ASSEMBLY_CONFIG_KEY, _assemblyConfigs);
                 EditorUtility.DisplayDialog("保存成功", "程序集配置已保存", "确定");
             }
             else
@@ -162,7 +162,7 @@ namespace NovaFramework.Editor.Installer
             try
             {
                 // 从CoreEngine.Editor.UserSettings加载配置
-                _assemblyConfigs = UserSettings.GetObject<List<AssemblyDefinitionInfo>>(Constants.ASSEMBLY_CONFIG_KEY);
+                _assemblyConfigs = UserSettings.GetObject<List<AssemblyDefinitionInfo>>(Constants.NovaFramework_Installer_ASSEMBLY_CONFIG_KEY);
                 if (_assemblyConfigs == null)
                 {
                     _assemblyConfigs = new List<AssemblyDefinitionInfo>();
@@ -174,7 +174,7 @@ namespace NovaFramework.Editor.Installer
                 try
                 {
                     // 尝试获取旧类型的配置
-                    var oldConfigs = UserSettings.GetObject<List<object>>(Constants.ASSEMBLY_CONFIG_KEY);
+                    var oldConfigs = UserSettings.GetObject<List<object>>(Constants.NovaFramework_Installer_ASSEMBLY_CONFIG_KEY);
                     if (oldConfigs != null)
                     {
                         _assemblyConfigs = new List<AssemblyDefinitionInfo>();

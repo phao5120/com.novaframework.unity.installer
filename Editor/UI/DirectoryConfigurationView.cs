@@ -29,7 +29,7 @@ using UnityEngine;
 
 namespace NovaFramework.Editor.Installer
 {
-    public class DirectoryConfigurationView
+    internal class DirectoryConfigurationView
     {
         // 环境目录配置相关
         private Dictionary<string, string> _systemVariables;
@@ -140,7 +140,7 @@ namespace NovaFramework.Editor.Installer
         public void SaveDirectoryConfiguration()
         {
             // 保存到CoreEngine.Editor.UserSettings
-            UserSettings.SetObject(Constants.DIRECTORY_CONFIG_KEY, _systemVariables);
+            UserSettings.SetObject(Constants.NovaFramework_Installer_DIRECTORY_CONFIG_KEY, _systemVariables);
             
             EditorUtility.DisplayDialog("保存成功", "系统变量配置已保存到UserSettings", "确定");
         }
@@ -154,7 +154,7 @@ namespace NovaFramework.Editor.Installer
             // 优先从CoreEngine.Editor.UserSettings加载配置，如果不存在则从DataManager加载
             try
             {
-                _systemVariables = UserSettings.GetObject<Dictionary<string, string>>(Constants.DIRECTORY_CONFIG_KEY);
+                _systemVariables = UserSettings.GetObject<Dictionary<string, string>>(Constants.NovaFramework_Installer_DIRECTORY_CONFIG_KEY);
             }
             catch (Exception e)
             { 

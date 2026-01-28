@@ -30,7 +30,7 @@ using UnityEditor;
 namespace NovaFramework.Editor.Installer
 {
     //处理git安装的一系列操作
-    public static class GitManager
+    internal static class GitManager
     {
         // 最大重试次数（解决文件临时占用问题）
         private const int MAX_RETRY_COUNT = 3;
@@ -46,7 +46,7 @@ namespace NovaFramework.Editor.Installer
                 Directory.CreateDirectory(destinationPath);
             }
             
-            bool cloneSuccess = GitUtils.CloneRepository(package.gitUrl, destinationPath);
+            bool cloneSuccess = GitHelper.CloneRepository(package.gitUrl, destinationPath);
             
             if (cloneSuccess)
             {
@@ -54,7 +54,7 @@ namespace NovaFramework.Editor.Installer
                 WaitForFileSystemStable(() =>
                 {
                     string packageSavePath = Path.Combine(SAVE_ROOT_PARH, package.name).Replace("\\", "/");
-                    PackageManifestUtils.AddPackageToManifest(package.name, packageSavePath);
+                    PackageManifestHandler.AddPackageToManifest(packageSavePath, package.name);
                 });
             }
             else
@@ -67,7 +67,7 @@ namespace NovaFramework.Editor.Installer
         {
             string folderPath = Path.Combine(Constants.FRAMEWORK_REPO_PATH, oldPkgName);
             ForceDeleteDirectory(folderPath);
-            PackageManifestUtils.RemovePackageFromManifest(oldPkgName);
+            PackageManifestHandler.RemovePackageFromManifest(oldPkgName);
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace NovaFramework.Editor.Installer
             if (Directory.Exists(packagePath))
             {
                 // 如果包已存在，使用pull更新
-                if (!GitUtils.PullRepository(packagePath))
+                if (!GitHelper.PullRepository(packagePath))
                 {
                     Debug.LogError($"包 {packageName} 更新失败");
                 }
