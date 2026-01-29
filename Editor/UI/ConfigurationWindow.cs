@@ -44,33 +44,17 @@ namespace NovaFramework.Editor.Installer
         // 添加自动配置相关字段
         private bool _isAutoConfiguring = false;
         private bool _showWizardButtons = false; // 是否显示向导按钮
-        private float _autoConfigTimer = 0f;
         private int _currentStep = 0;
-        
-        // 添加菜单项以启动自动配置
-        [MenuItem("Tools/启动自动配置向导 &_F8", false, 1)]
-        public static void StartAutoConfigurationWizard()
-        {
-            StartAutoConfiguration();
-        }
-        
+       
         public static void ShowWindow()
         {
-            _window = (ConfigurationWindow)EditorWindow.GetWindow(typeof(ConfigurationWindow));
+            _window = (ConfigurationWindow)GetWindow(typeof(ConfigurationWindow));
             _window.titleContent = new GUIContent("框架配置中心");
             _window.minSize = new Vector2(800, 700);
             _window.Show();
         }
         
-        // 添加自动配置方法
-        public static void StartAutoConfiguration()
-        {
-            ShowWindow();
-            _window._isAutoConfiguring = true;
-            _window._currentStep = 0;
-            _window._autoConfigTimer = 0f;
-        }
-        
+      
         void OnEnable()
         {
             //重新加载数据
@@ -121,6 +105,38 @@ namespace NovaFramework.Editor.Installer
                         }
                         break;
                 }
+                
+                EditorGUILayout.Space(10);
+                
+                // 显示当前步骤信息
+                string currentStepInfo = GetWizardStepInfo();
+                EditorGUILayout.HelpBox(currentStepInfo, MessageType.Info);
+                
+                EditorGUILayout.Space(10);
+                
+                // 显示向导按钮
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                
+                if (_currentStep < 2) // 前两步显示"下一步"
+                {
+                    if (GUILayout.Button("下一步", GUILayout.Width(120), GUILayout.Height(30)))
+                    {
+                        ExecuteCurrentStep();
+                        _currentStep++;
+                    }
+                }
+                else if (_currentStep == 2) // 最后一步显示"完成"
+                {
+                    if (GUILayout.Button("完成", GUILayout.Width(120), GUILayout.Height(30)))
+                    {
+                        ExecuteCurrentStep(); // 执行最后一步
+                        FinishAutoConfiguration();
+                    }
+                }
+                
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.EndHorizontal();
             }
             else
             {
@@ -150,59 +166,65 @@ namespace NovaFramework.Editor.Installer
             }
             
             // 处理自动配置流程
-            if (_isAutoConfiguring)
+            if (_isAutoConfiguring && !_showWizardButtons)
             {
-                HandleAutoConfiguration();
+                // 这里保留原来的方法，但当前不需要自动执行流程
             }
         }
         
-        private void HandleAutoConfiguration()
+        private string GetWizardStepInfo()
         {
-            _autoConfigTimer += Time.deltaTime;
-            
-            // 每隔一段时间执行一步
-            if (_autoConfigTimer >= 1.0f) // 每秒执行一步
+            switch (_currentStep)
             {
-                _autoConfigTimer = 0f;
-                
-                switch (_currentStep)
-                {
-                    case 0: // 第一步：自动完成插件配置
-                        // 在插件配置视图中自动保存（通过调用相应方法）
-                        // 这里模拟点击保存按钮的操作
-                        GitManager.HandleSelectPackages(DataManager.LoadPersistedSelectedPackages(), PackageManager.GetSelectedPackageNames());
-                        DataManager.SavePersistedSelectedPackages(PackageManager.GetSelectedPackageNames());
-                        UnityEditor.PackageManager.Client.Resolve();
-                        Debug.Log("自动配置：完成插件配置并保存");
-                        break;
-                    case 1: // 第二步：自动完成环境目录配置
-                        // 刷新数据确保环境变量配置是最新的
-                        _directoryView.RefreshData();
-                        // 保存目录配置
-                        _directoryView.SaveDirectoryConfiguration(true);
-                        Debug.Log("自动配置：完成环境目录配置并保存");
-                        break;
-                    case 2: // 第三步：自动完成程序集配置
-                        // 刷新数据确保程序集配置是最新的
-                        _assemblyView.RefreshData();
-                        // 保存程序集配置
-                        _assemblyView.SaveAssemblyConfiguration(true);
-                        Debug.Log("自动配置：完成程序集配置并保存");
-                        break;
-                    case 3: // 第四步：自动导出配置
-                        // 调用导出配置方法
-                        ExportConfigurationMenu.ExportConfiguration();
-                        Debug.Log("自动配置：完成配置导出");
-                        break;
-                    case 4: // 第五步：提示运行游戏
-                        EditorUtility.DisplayDialog("配置完成", "框架配置已全部完成！\n现在您可以开始运行游戏了。", "确定");
-                        _isAutoConfiguring = false; // 结束自动配置流程
-                        return;
-                }
-                
-                _currentStep++;
+                case 0:
+                    return "第一步：请检查并确认插件配置。点击‘下一步’将自动保存当前配置。";
+                case 1:
+                    return "第二步：请检查并确认环境目录配置。点击‘下一步’将自动保存当前配置。";
+                case 2:
+                    return "第三步：请检查并确认程序集配置。点击‘完成’将保存配置并导出配置，结束后提示运行游戏。";
+                default:
+                    return "配置向导";
             }
         }
-             
+        
+        private void ExecuteCurrentStep()
+        {
+            switch (_currentStep)
+            {
+                case 0: // 第一步：处理插件配置
+                    // 在插件配置视图中自动保存（通过调用相应方法）
+                    GitManager.HandleSelectPackages(DataManager.LoadPersistedSelectedPackages(), PackageManager.GetSelectedPackageNames());
+                    DataManager.SavePersistedSelectedPackages(PackageManager.GetSelectedPackageNames());
+                    UnityEditor.PackageManager.Client.Resolve();
+                    Debug.Log("自动配置：完成插件配置并保存");
+                    break;
+                case 1: // 第二步：处理环境目录配置
+                    // 保存目录配置
+                    _directoryView.SaveDirectoryConfiguration(true);
+                    Debug.Log("自动配置：完成环境目录配置并保存");
+                    break;
+                case 2: // 第三步：处理程序集配置
+                    // 保存程序集配置
+                    _assemblyView.SaveAssemblyConfiguration(true);
+                    Debug.Log("自动配置：完成程序集配置并保存");
+                    break;
+            }
+        }
+        
+        private void FinishAutoConfiguration()
+        {
+            // 先导出配置
+            ExportConfigurationMenu.ExportConfiguration();
+            Debug.Log("自动配置：完成配置导出");
+            
+            // 结束自动配置流程
+            _isAutoConfiguring = false;
+            _showWizardButtons = false; // 隐藏向导按钮
+            
+            // 提示用户配置已完成
+            EditorUtility.DisplayDialog("配置完成", "框架配置已全部完成！\n现在您可以开始运行游戏了。", "确定");
+        }
+        
+      
     }
 }
