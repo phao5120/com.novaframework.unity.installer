@@ -71,12 +71,29 @@ namespace NovaFramework.Editor.Installer
                     _systemVariables[pathInfo.name] : pathInfo.defaultValue;
                     
                 // 显示当前路径，但不允许直接编辑
-                GUILayout.Label(currentValue, GUILayout.ExpandWidth(true));
+                string newValue = EditorGUILayout.TextField(currentValue, GUILayout.ExpandWidth(true));
+                
+                // 检查值是否发生变化，如果变化则自动保存
+                if (newValue != currentValue)
+                {
+                    // 更新系统变量字典
+                    if (_systemVariables.ContainsKey(pathInfo.name))
+                    {
+                        _systemVariables[pathInfo.name] = newValue;
+                    }
+                    else
+                    {
+                        _systemVariables.Add(pathInfo.name, newValue);
+                    }
+                    
+                    // 自动保存更改
+                    SaveDirectoryConfiguration();
+                }
                 
                 // 添加浏览按钮，让用户可以选择目录
                 if (GUILayout.Button("浏览", GUILayout.Width(60)))
                 {
-                    string selectedPath = EditorUtility.OpenFolderPanel($"选择 {displayTitle} 目录", currentValue, "");
+                    string selectedPath = EditorUtility.OpenFolderPanel($"选择 {displayTitle} 目录", newValue, "");
                     if (!string.IsNullOrEmpty(selectedPath))
                     {
                         // 将绝对路径转换为Assets后的路径
@@ -104,6 +121,9 @@ namespace NovaFramework.Editor.Installer
                         {
                             _systemVariables.Add(pathInfo.name, selectedPath);
                         }
+                        
+                        // 自动保存更改
+                        SaveDirectoryConfiguration();
                     }
                 }
                 
@@ -119,18 +139,14 @@ namespace NovaFramework.Editor.Installer
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace(); // 左侧弹性空间
             
-            // 按钮使用标准尺寸 - 符合规范要求
-            if (GUILayout.Button("保存", GUILayout.Width(120), GUILayout.Height(30)))
-            {
-                SaveDirectoryConfiguration();
-            }
-            
             // 添加按钮间的间距 - 符合规范要求
             GUILayout.Space(10);
             
             if (GUILayout.Button("重置", GUILayout.Width(120), GUILayout.Height(30)))
             {
                 _systemVariables = GetDefaultSystemVariablesFromPathInfos();
+                // 自动保存重置后的配置
+                SaveDirectoryConfiguration();
             }
             
             GUILayout.FlexibleSpace(); // 右侧弹性空间
@@ -142,8 +158,16 @@ namespace NovaFramework.Editor.Installer
             // 保存到CoreEngine.Editor.UserSettings
             UserSettings.SetObject(Constants.NovaFramework_Installer_DIRECTORY_CONFIG_KEY, _systemVariables);
             
-            EditorUtility.DisplayDialog("保存成功", "系统变量配置已保存到UserSettings", "确定");
+            // 自动保存时不显示对话框
+            if (!_isAutoSaving)
+            {
+                // 临时启用对话框显示
+                EditorUtility.DisplayDialog("保存成功", "系统变量配置已保存到UserSettings", "确定");
+            }
         }
+        
+        // 添加一个私有字段来标识是否是自动保存
+        private bool _isAutoSaving = false;
         
         public void RefreshData()
         {

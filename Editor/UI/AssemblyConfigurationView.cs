@@ -82,17 +82,14 @@ namespace NovaFramework.Editor.Installer
                     loadableStrategies = new List<string> { "Compile" } // 默认使用Compile标签
                 };
                 _assemblyConfigs.Add(newConfig);
+                // 自动保存
+                SaveAssemblyConfiguration();
             }
             
             // 添加按钮间的间距
             GUILayout.Space(10);
             
-            // 保存程序集配置按钮，使用标准按钮样式
-            if (GUILayout.Button("保存", GUILayout.Width(120), GUILayout.Height(30)))
-            {
-                SaveAssemblyConfiguration();
-            }
-            
+            // 移除手动保存按钮
             GUILayout.FlexibleSpace(); // 右侧弹性空间
             EditorGUILayout.EndHorizontal();
         }
@@ -107,11 +104,19 @@ namespace NovaFramework.Editor.Installer
             
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("名称:", GUILayout.Width(50));
-            config.name = EditorGUILayout.TextField(config.name, GUILayout.ExpandWidth(true));
+            string newName = EditorGUILayout.TextField(config.name, GUILayout.ExpandWidth(true));
+            
+            // 检查名称是否改变，如果改变则自动保存
+            if (newName != config.name)
+            {
+                config.name = newName;
+                SaveAssemblyConfiguration();
+            }
             
             if (GUILayout.Button("移除", GUILayout.Width(60)))
             {
                 _assemblyConfigs.RemoveAt(index);
+                SaveAssemblyConfiguration(); // 自动保存
                 GUIUtility.ExitGUI(); // 退出GUI以防止索引错误
                 return;
             }
@@ -119,21 +124,35 @@ namespace NovaFramework.Editor.Installer
             
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("顺序:", GUILayout.Width(50));
-            config.order = EditorGUILayout.IntField(config.order, GUILayout.Width(100));
+            int newOrder = EditorGUILayout.IntField(config.order, GUILayout.Width(100));
+            
+            // 检查顺序是否改变，如果改变则自动保存
+            if (newOrder != config.order)
+            {
+                config.order = newOrder;
+                SaveAssemblyConfiguration();
+            }
             
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("标签:", GUILayout.Width(50));
-            config.loadableStrategies = EditAssemblyTagsField(config.loadableStrategies);
+            var newTags = EditAssemblyTagsField(config.loadableStrategies);
+            
+            // 检查标签是否改变，如果改变则自动保存
+            if (newTags != config.loadableStrategies)
+            {
+                config.loadableStrategies = newTags;
+                SaveAssemblyConfiguration();
+            }
             
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.EndVertical();
         }
         
-        void SaveAssemblyConfiguration()
+        public void SaveAssemblyConfiguration()
         {
             // 保存到CoreEngine.Editor.UserSettings
             if (_assemblyConfigs != null)
@@ -148,7 +167,13 @@ namespace NovaFramework.Editor.Installer
                 }
                 
                 UserSettings.SetObject(Constants.NovaFramework_Installer_ASSEMBLY_CONFIG_KEY, _assemblyConfigs);
-                EditorUtility.DisplayDialog("保存成功", "程序集配置已保存", "确定");
+                
+                // 自动保存时不显示对话框
+                if (!_isAutoSaving)
+                {
+                    // 临时启用对话框显示
+                    EditorUtility.DisplayDialog("保存成功", "程序集配置已保存", "确定");
+                }
             }
             else
             {
@@ -156,6 +181,8 @@ namespace NovaFramework.Editor.Installer
             }
         }
         
+        // 添加一个私有字段来标识是否是自动保存
+        private bool _isAutoSaving = false;
         
         public void RefreshData()
         {

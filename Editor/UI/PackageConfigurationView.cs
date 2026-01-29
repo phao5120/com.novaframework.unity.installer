@@ -222,16 +222,6 @@ namespace NovaFramework.Editor.Installer
             
             EditorGUILayout.BeginHorizontal();
             
-            GUIStyle saveButtonStyle = RichTextUtils.GetButtonTextOnlyStyle(Color.green); 
-            if (GUILayout.Button("保存选择", saveButtonStyle, GUILayout.Height(35)))
-            {
-                Debug.Log("保存选择");
-                GitManager.HandleSelectPackages(DataManager.LoadPersistedSelectedPackages(), PackageManager.GetSelectedPackageNames());
-                DataManager.SavePersistedSelectedPackages(PackageManager.GetSelectedPackageNames());
-                // 注释掉此处的Client.Resolve()调用，统一在所有包都添加完毕后调用
-                UnityEditor.PackageManager.Client.Resolve();
-            }
-            
             GUIStyle updateButtonStyle = RichTextUtils.GetButtonTextOnlyStyle(Color.yellow);
             if (GUILayout.Button("一键更新所选包(Git)", updateButtonStyle, GUILayout.Height(35)))
             {
