@@ -83,7 +83,7 @@ namespace NovaFramework.Editor.Installer
                 };
                 _assemblyConfigs.Add(newConfig);
                 // 自动保存
-                SaveAssemblyConfiguration();
+                SaveAssemblyConfiguration(false);
             }
             
             // 添加按钮间的间距
@@ -110,13 +110,13 @@ namespace NovaFramework.Editor.Installer
             if (newName != config.name)
             {
                 config.name = newName;
-                SaveAssemblyConfiguration();
+                SaveAssemblyConfiguration(false);
             }
             
             if (GUILayout.Button("移除", GUILayout.Width(60)))
             {
                 _assemblyConfigs.RemoveAt(index);
-                SaveAssemblyConfiguration(); // 自动保存
+                SaveAssemblyConfiguration(false); // 自动保存
                 GUIUtility.ExitGUI(); // 退出GUI以防止索引错误
                 return;
             }
@@ -130,7 +130,7 @@ namespace NovaFramework.Editor.Installer
             if (newOrder != config.order)
             {
                 config.order = newOrder;
-                SaveAssemblyConfiguration();
+                SaveAssemblyConfiguration(false);
             }
             
             GUILayout.FlexibleSpace();
@@ -144,7 +144,7 @@ namespace NovaFramework.Editor.Installer
             if (newTags != config.loadableStrategies)
             {
                 config.loadableStrategies = newTags;
-                SaveAssemblyConfiguration();
+                SaveAssemblyConfiguration(false);
             }
             
             EditorGUILayout.EndHorizontal();
@@ -152,7 +152,7 @@ namespace NovaFramework.Editor.Installer
             EditorGUILayout.EndVertical();
         }
         
-        public void SaveAssemblyConfiguration()
+        public void SaveAssemblyConfiguration(bool isAutoSaving = false)
         {
             // 保存到CoreEngine.Editor.UserSettings
             if (_assemblyConfigs != null)
@@ -169,9 +169,8 @@ namespace NovaFramework.Editor.Installer
                 UserSettings.SetObject(Constants.NovaFramework_Installer_ASSEMBLY_CONFIG_KEY, _assemblyConfigs);
                 
                 // 自动保存时不显示对话框
-                if (!_isAutoSaving)
+                if (!isAutoSaving)
                 {
-                    // 临时启用对话框显示
                     EditorUtility.DisplayDialog("保存成功", "程序集配置已保存", "确定");
                 }
             }
@@ -181,8 +180,7 @@ namespace NovaFramework.Editor.Installer
             }
         }
         
-        // 添加一个私有字段来标识是否是自动保存
-        private bool _isAutoSaving = false;
+
         
         public void RefreshData()
         {

@@ -10,7 +10,7 @@
         <local-path name="SCRIPT_FILE_PATH" defaultValue="Assets/LuaScripts" title="脚本目录"/>
         <local-path name="AOT_LIBRARY_PATH" defaultValue="Assets/_Resources/Aot" title="预编译库目录" required="true"/>
         <local-path name="LINK_LIBRARY_PATH" defaultValue="Assets/_Resources/Code" title="链接库目录" required="true"/>
-        <local-path name="CONTEXT_PATH" defaultValue="Assets/_Resources/Context" title="环境文件目录"/>
+        <local-path name="CONTEXT_PATH" defaultValue="Assets/_Resources/Context" title="环境文件目录" />
         <local-path name="CONFIG_PATH" defaultValue="Assets/_Resources/Config" title="配置文件目录"/>
         <local-path name="PROTOCOL_PATH" defaultValue="Assets/_Resources/Protocol" title="协议文件目录"/>
     </system-path>
@@ -18,55 +18,37 @@
     <!-- 插件包配置清单 -->
 
     <!-- 基础引擎库 -->
-    <package name="com.yoseasoft.gooasset"
-             displayName="GooAsset"
-             title="Goo资产管理框架"
-             required="true">
+    <package name="com.yoseasoft.gooasset" displayName="GooAsset" title="Goo资产管理框架" required="true">
         <git-repository url="%REPO_URL%/GooAsset.git"/>
     </package>
-    <package name="com.yoseasoft.novaframework"
-             displayName="NovaFramework"
-             title="Nova引擎框架"
-             required="true">
+    <package name="com.yoseasoft.novaframework" displayName="NovaFramework" title="Nova引擎框架" required="true">
         <git-repository url="%REPO_URL%/NovaFramework.git"/>
         <dependencies>
             <reference-package>com.yoseasoft.gooasset</reference-package>
             <reference-package>com.novaframework.unity.unitask</reference-package>
         </dependencies>
     </package>
-    <package name="com.novaframework.unity.core.common"
-             displayName="NovaFramework.Common"
-             title="Nova引擎核心通用库"
-             required="true">
+    <package name="com.novaframework.unity.core.common" displayName="NovaFramework.Common" title="Nova引擎功能通用库" required="true">
         <git-repository url="%REPO_URL%/com.novaframework.unity.core.common.git"/>
     </package>
-    <package name="com.novaframework.unity.core.configure"
-             displayName="NovaFramework.Configure"
-             title="Nova引擎核心配置库"
-             required="true">
+    <package name="com.novaframework.unity.core.configure" displayName="NovaFramework.Configure" title="Nova引擎配置核心库" required="true">
         <git-repository url="%REPO_URL%/com.novaframework.unity.core.configure.git"/>
         <dependencies>
             <reference-package>com.novaframework.unity.core.common</reference-package>
         </dependencies>
     </package>
-    <package name="com.novaframework.unity.core.boot"
-             displayName="NovaFramework.Boot"
-             title="Nova引擎核心启动库"
-             required="true">
+    <package name="com.novaframework.unity.core.boot" displayName="NovaFramework.Boot" title="Nova引擎启动核心库" required="true">
         <git-repository url="%REPO_URL%/com.novaframework.unity.core.boot.git"/>
         <dependencies>
-            <reference-package>com.yoseasoft.gooasset</reference-package>
             <reference-package>com.novaframework.unity.core.common</reference-package>
             <reference-package>com.novaframework.unity.core.configure</reference-package>
-            <reference-package>com.novaframework.unity.unitask</reference-package>
         </dependencies>
     </package>
 
     <!-- 第三方工具库 -->
     <package name="com.novaframework.unity.unitask"
              displayName="NovaFramework.UniTask"
-             title="UniTask工具库"
-             required="true">
+             title="UniTask工具库">
         <git-repository url="%REPO_URL%/com.novaframework.unity.unitask.git"/>
     </package>
     <package name="com.novaframework.unity.litjson"

@@ -684,9 +684,8 @@ namespace NovaFramework.Editor.Installer
                                 {
                                     UserSettings.SetBool(Constants.NovaFramework_Installer_INSTALLER_COMPLETE_KEY, true);
                                     SetStepToProgress(11); // Complete 对应值为11
-                                    
-                                    // 不在此处调用Client.Resolve()以避免触发PackageInstallerLauncher的重复安装
-                                    // Unity会自动处理包的更新
+
+                                    Client.Resolve();
                                 };
                             };
                         };

@@ -43,6 +43,7 @@ namespace NovaFramework.Editor.Installer
         
         // 添加自动配置相关字段
         private bool _isAutoConfiguring = false;
+        private bool _showWizardButtons = false; // 是否显示向导按钮
         private float _autoConfigTimer = 0f;
         private int _currentStep = 0;
         
@@ -82,12 +83,6 @@ namespace NovaFramework.Editor.Installer
         
         void OnGUI()
         {
-            // 处理自动配置流程
-            if (_isAutoConfiguring)
-            {
-                HandleAutoConfiguration();
-            }
-            
             // 添加大号标题
             GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel);
             titleStyle.fontSize = 24;
@@ -99,30 +94,66 @@ namespace NovaFramework.Editor.Installer
             GUIStyle tabStyle = new GUIStyle(GUI.skin.button);
             tabStyle.fontSize = 16;
             tabStyle.fixedHeight = 35;
-            _selectedTab = GUILayout.Toolbar(_selectedTab, _tabNames, tabStyle);
-            EditorGUILayout.Space(10);
             
-            // 根据选中的标签页显示不同内容
-            switch (_selectedTab)
+            // 如果正在显示向导按钮，则锁定标签页显示
+            if (_showWizardButtons)
             {
-                case 0:
-                    _packageView.DrawView();
-                    break;
-                case 1:
-                    _directoryView.DrawView();
-                    break;
-                case 2:
-                    if (_assemblyView != null)
-                    {
-                        _assemblyView.DrawView();
-                    }
-                    else
-                    {
-                        EditorGUILayout.HelpBox("程序集配置视图未初始化", MessageType.Error);
-                    }
-                    break;
+                // 显示当前配置步骤的标签页
+                _selectedTab = GUILayout.Toolbar(0, new string[] { _tabNames[_currentStep] }, tabStyle);
+                
+                // 根据当前步骤显示对应的配置界面
+                switch (_currentStep)
+                {
+                    case 0:
+                        _packageView.DrawView();
+                        break;
+                    case 1:
+                        _directoryView.DrawView();
+                        break;
+                    case 2:
+                        if (_assemblyView != null)
+                        {
+                            _assemblyView.DrawView();
+                        }
+                        else
+                        {
+                            EditorGUILayout.HelpBox("程序集配置视图未初始化", MessageType.Error);
+                        }
+                        break;
+                }
             }
-
+            else
+            {
+                // 正常模式下显示所有标签页
+                _selectedTab = GUILayout.Toolbar(_selectedTab, _tabNames, tabStyle);
+                
+                // 根据选中的标签页显示不同内容
+                switch (_selectedTab)
+                {
+                    case 0:
+                        _packageView.DrawView();
+                        break;
+                    case 1:
+                        _directoryView.DrawView();
+                        break;
+                    case 2:
+                        if (_assemblyView != null)
+                        {
+                            _assemblyView.DrawView();
+                        }
+                        else
+                        {
+                            EditorGUILayout.HelpBox("程序集配置视图未初始化", MessageType.Error);
+                        }
+                        break;
+                }
+            }
+            
+            // 处理自动配置流程
+            if (_isAutoConfiguring)
+            {
+                HandleAutoConfiguration();
+            }
         }
         
         private void HandleAutoConfiguration()
@@ -148,14 +179,14 @@ namespace NovaFramework.Editor.Installer
                         // 刷新数据确保环境变量配置是最新的
                         _directoryView.RefreshData();
                         // 保存目录配置
-                        _directoryView.SaveDirectoryConfiguration();
+                        _directoryView.SaveDirectoryConfiguration(true);
                         Debug.Log("自动配置：完成环境目录配置并保存");
                         break;
                     case 2: // 第三步：自动完成程序集配置
                         // 刷新数据确保程序集配置是最新的
                         _assemblyView.RefreshData();
                         // 保存程序集配置
-                        _assemblyView.SaveAssemblyConfiguration();
+                        _assemblyView.SaveAssemblyConfiguration(true);
                         Debug.Log("自动配置：完成程序集配置并保存");
                         break;
                     case 3: // 第四步：自动导出配置

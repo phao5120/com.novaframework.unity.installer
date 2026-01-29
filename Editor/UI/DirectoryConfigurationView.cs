@@ -87,7 +87,7 @@ namespace NovaFramework.Editor.Installer
                     }
                     
                     // 自动保存更改
-                    SaveDirectoryConfiguration();
+                    SaveDirectoryConfiguration(false);
                 }
                 
                 // 添加浏览按钮，让用户可以选择目录
@@ -146,28 +146,26 @@ namespace NovaFramework.Editor.Installer
             {
                 _systemVariables = GetDefaultSystemVariablesFromPathInfos();
                 // 自动保存重置后的配置
-                SaveDirectoryConfiguration();
+                SaveDirectoryConfiguration(false);
             }
             
             GUILayout.FlexibleSpace(); // 右侧弹性空间
             EditorGUILayout.EndHorizontal();
         }
         
-        public void SaveDirectoryConfiguration()
+        public void SaveDirectoryConfiguration(bool isAutoSaving = false)
         {
             // 保存到CoreEngine.Editor.UserSettings
             UserSettings.SetObject(Constants.NovaFramework_Installer_DIRECTORY_CONFIG_KEY, _systemVariables);
             
             // 自动保存时不显示对话框
-            if (!_isAutoSaving)
+            if (!isAutoSaving)
             {
-                // 临时启用对话框显示
                 EditorUtility.DisplayDialog("保存成功", "系统变量配置已保存到UserSettings", "确定");
             }
         }
         
-        // 添加一个私有字段来标识是否是自动保存
-        private bool _isAutoSaving = false;
+
         
         public void RefreshData()
         {
