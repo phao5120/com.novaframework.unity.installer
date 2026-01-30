@@ -53,6 +53,28 @@ namespace NovaFramework.Editor.Installer
             _window.Show();
         }
         
+        /// <summary>
+        /// 通过反射调用的方法，用于外部包设置向导模式
+        /// </summary>
+        public static void SetWizardMode(bool show)
+        {
+            _window = (_window == null) ? (ConfigurationWindow)GetWindow(typeof(ConfigurationWindow)) : _window;
+            if (_window != null)
+            {
+                _window._showWizardButtons = show;
+                _window._currentStep = 0; // 重置步骤到开始位置
+            }
+        }
+        
+        /// <summary>
+        /// 启动自动配置向导
+        /// </summary>
+        public static void StartAutoConfiguration()
+        {
+            SetWizardMode(true);
+            ShowWindow();
+        }
+        
       
         void OnEnable()
         {
