@@ -41,8 +41,7 @@ namespace NovaFramework.Editor.Installer
         private DirectoryConfigurationView _directoryView;
         private AssemblyConfigurationView _assemblyView;
         
-        // 添加自动配置相关字段
-        private bool _isAutoConfiguring = false;
+     
         private bool _showWizardButtons = false; // 是否显示向导按钮
         private int _currentStep = 0;
        
@@ -67,23 +66,25 @@ namespace NovaFramework.Editor.Installer
         
         void OnGUI()
         {
-            // 添加大号标题
+            // 添加标题
             GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel);
-            titleStyle.fontSize = 24;
+            titleStyle.fontSize = 18; // 恢复正常字体大小
             titleStyle.alignment = TextAnchor.MiddleCenter;
             GUILayout.Label("框架配置中心", titleStyle);
             EditorGUILayout.Space(10);
             
-            // 标签页选择，增加高度和字体大小
+            // 标签页选择，恢复正常样式
             GUIStyle tabStyle = new GUIStyle(GUI.skin.button);
-            tabStyle.fontSize = 16;
-            tabStyle.fixedHeight = 35;
+            tabStyle.fontSize = 14; // 恢复正常标签字体
+            tabStyle.fixedHeight = 30;
             
             // 如果正在显示向导按钮，则锁定标签页显示
             if (_showWizardButtons)
             {
                 // 显示当前配置步骤的标签页
                 _selectedTab = GUILayout.Toolbar(0, new string[] { _tabNames[_currentStep] }, tabStyle);
+                
+                EditorGUILayout.Space(5); // 添加一点间距，让内容与标签分开
                 
                 // 根据当前步骤显示对应的配置界面
                 switch (_currentStep)
@@ -143,6 +144,8 @@ namespace NovaFramework.Editor.Installer
                 // 正常模式下显示所有标签页
                 _selectedTab = GUILayout.Toolbar(_selectedTab, _tabNames, tabStyle);
                 
+                EditorGUILayout.Space(5); // 添加一点间距，让内容与标签分开
+                
                 // 根据选中的标签页显示不同内容
                 switch (_selectedTab)
                 {
@@ -165,11 +168,7 @@ namespace NovaFramework.Editor.Installer
                 }
             }
             
-            // 处理自动配置流程
-            if (_isAutoConfiguring && !_showWizardButtons)
-            {
-                // 这里保留原来的方法，但当前不需要自动执行流程
-            }
+          
         }
         
         private string GetWizardStepInfo()
@@ -200,12 +199,12 @@ namespace NovaFramework.Editor.Installer
                     break;
                 case 1: // 第二步：处理环境目录配置
                     // 保存目录配置
-                    _directoryView.SaveDirectoryConfiguration(true);
+                    _directoryView.SaveDirectoryConfiguration();
                     Debug.Log("自动配置：完成环境目录配置并保存");
                     break;
                 case 2: // 第三步：处理程序集配置
                     // 保存程序集配置
-                    _assemblyView.SaveAssemblyConfiguration(true);
+                    _assemblyView.SaveAssemblyConfiguration();
                     Debug.Log("自动配置：完成程序集配置并保存");
                     break;
             }
@@ -217,8 +216,6 @@ namespace NovaFramework.Editor.Installer
             ExportConfigurationMenu.ExportConfiguration();
             Debug.Log("自动配置：完成配置导出");
             
-            // 结束自动配置流程
-            _isAutoConfiguring = false;
             _showWizardButtons = false; // 隐藏向导按钮
             
             // 提示用户配置已完成

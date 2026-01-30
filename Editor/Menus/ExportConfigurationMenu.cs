@@ -12,6 +12,11 @@ namespace NovaFramework.Editor.Installer
         [MenuItem("Tools/导出配置 _F3", false, 1000)]
         public static void ExportConfiguration()
         {
+            ExportConfiguration(true); // 菜单导出时选中文件
+        }
+        
+        public static void ExportConfiguration(bool selectFile = false) // 添加参数控制是否选中文件
+        {
             try
             {
                 // 从UserSettings获取配置，使用try-catch包装以防反序列化错误
@@ -136,16 +141,19 @@ namespace NovaFramework.Editor.Installer
                 // 刷新Asset数据库
                 AssetDatabase.Refresh();
                 
-                // 选中导出的配置文件
-                UnityEngine.Object configFile = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(Constants.SYSTEM_ENVIRONMENTS_PATH);
-                if (configFile != null)
+                // 只有在selectFile为true时才选中导出的配置文件（通常是通过菜单导出时）
+                if (selectFile)
                 {
-                    Selection.activeObject = configFile;
-                    EditorGUIUtility.PingObject(configFile);
-                }
-                else
-                {
-                    Debug.LogWarning($"无法选中配置文件: {Constants.SYSTEM_ENVIRONMENTS_PATH}");
+                    UnityEngine.Object configFile = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(Constants.SYSTEM_ENVIRONMENTS_PATH);
+                    if (configFile != null)
+                    {
+                        Selection.activeObject = configFile;
+                        EditorGUIUtility.PingObject(configFile);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"无法选中配置文件: {Constants.SYSTEM_ENVIRONMENTS_PATH}");
+                    }
                 }
             }
             catch (Exception e)

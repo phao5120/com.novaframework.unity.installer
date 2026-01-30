@@ -667,7 +667,7 @@ namespace NovaFramework.Editor.Installer
                     
                     EditorApplication.delayCall += () =>
                     {
-                        ExportConfigurationMenu.ExportConfiguration();
+                        ExportConfigurationMenu.ExportConfiguration(false);
                         AddLogToProgress("已导出 system_environments.json 配置文件");
                         
                         // 延迟打开场景

@@ -330,6 +330,14 @@ namespace NovaFramework.Editor.Installer
                     }
                 }
 
+                // 使用EditorApplication.delayCall延迟执行保存操作，确保界面更新
+                UnityEditor.EditorApplication.delayCall += () =>
+                {
+                    GitManager.HandleSelectPackages(DataManager.LoadPersistedSelectedPackages(), PackageManager.GetSelectedPackageNames());
+                    DataManager.SavePersistedSelectedPackages(PackageManager.GetSelectedPackageNames());
+                    UnityEditor.PackageManager.Client.Resolve();
+                };
+                
                 return true;
             }
             else
@@ -349,6 +357,15 @@ namespace NovaFramework.Editor.Installer
         
                 // 如果没有包依赖此包，可以取消选中
                 package.isSelected = false;
+                
+                // 使用EditorApplication.delayCall延迟执行保存操作，确保界面更新
+                UnityEditor.EditorApplication.delayCall += () =>
+                {
+                    GitManager.HandleSelectPackages(DataManager.LoadPersistedSelectedPackages(), PackageManager.GetSelectedPackageNames());
+                    DataManager.SavePersistedSelectedPackages(PackageManager.GetSelectedPackageNames());
+                    UnityEditor.PackageManager.Client.Resolve();
+                };
+                
                 return true;
             }
         }

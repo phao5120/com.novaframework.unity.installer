@@ -43,21 +43,18 @@ namespace NovaFramework.Editor.Installer
 
         public void DrawView()
         {
-            // 增大帮助文本的字体
-            GUIStyle helpStyle = new GUIStyle(EditorStyles.helpBox);
-            helpStyle.fontSize = 14;
-            EditorGUILayout.BeginVertical(helpStyle);
+            // 使用标准的布局，不添加额外的边框
             EditorGUILayout.HelpBox("在此处可以修改系统变量目录配置", MessageType.Info);
-            EditorGUILayout.EndVertical();
             
-            // 添加间距
+            // 添加标准间距
             EditorGUILayout.Space(10);
             
             // 使用固定高度而不是ExpandHeight(true)，确保为底部按钮预留空间
-            float availableHeight = Mathf.Max(250, Screen.height * 0.6f); // 使用屏幕高度的60%，但最少250像素，确保内容可显示
+            float availableHeight = Mathf.Max(200, Mathf.Min(400, Screen.height * 0.5f)); // 限制最大高度，使用屏幕高度的50%，但最少200像素，最多400像素，确保内容可显示
             _dirScrollPos = EditorGUILayout.BeginScrollView(_dirScrollPos, GUILayout.Height(availableHeight));
             
             // 使用从PackageManager获取的系统路径信息来显示配置
+            int pathIndex = 0; // 用于唯一标识每个输入框
             foreach (var pathInfo in _systemPathInfos)
             {
                 EditorGUILayout.BeginHorizontal("box");
@@ -70,13 +67,16 @@ namespace NovaFramework.Editor.Installer
                 string currentValue = _systemVariables.ContainsKey(pathInfo.name) ? 
                     _systemVariables[pathInfo.name] : pathInfo.defaultValue;
                     
+                // 生成唯一的文本框ID
+                string textFieldId = pathInfo.name + "_textField";
+                GUI.SetNextControlName(textFieldId);
+                
                 // 显示当前路径，但不允许直接编辑
                 string newValue = EditorGUILayout.TextField(currentValue, GUILayout.ExpandWidth(true));
                 
-                // 检查值是否发生变化，如果变化则自动保存
+                // 更新显示值到字典（不立即保存）
                 if (newValue != currentValue)
                 {
-                    // 更新系统变量字典
                     if (_systemVariables.ContainsKey(pathInfo.name))
                     {
                         _systemVariables[pathInfo.name] = newValue;
@@ -85,10 +85,19 @@ namespace NovaFramework.Editor.Installer
                     {
                         _systemVariables.Add(pathInfo.name, newValue);
                     }
-                    
-                    // 自动保存更改
-                    SaveDirectoryConfiguration(false);
                 }
+                
+                // 检查文本框是否失去焦点，如果是则保存
+                if (Event.current.type == EventType.Repaint && GUI.GetNameOfFocusedControl() != textFieldId)
+                {
+                    // 验证当前显示的值是否与保存的值一致
+                    if (_systemVariables.ContainsKey(pathInfo.name) && _systemVariables[pathInfo.name] != currentValue)
+                    {
+                        SaveDirectoryConfiguration();
+                    }
+                }
+                
+                pathIndex++; // 递增索引
                 
                 // 添加浏览按钮，让用户可以选择目录
                 if (GUILayout.Button("浏览", GUILayout.Width(60)))
@@ -132,37 +141,33 @@ namespace NovaFramework.Editor.Installer
             
             EditorGUILayout.EndScrollView();
             
-            // 添加底部间距 - 符合规范要求
-            EditorGUILayout.Space(30);
+            // 添加底部间距
+            EditorGUILayout.Space(20); // 标准底部间距
             
             // 操作按钮，水平排列并居中显示
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace(); // 左侧弹性空间
             
-            // 添加按钮间的间距 - 符合规范要求
+            // 添加按钮间的间距
             GUILayout.Space(10);
             
             if (GUILayout.Button("重置", GUILayout.Width(120), GUILayout.Height(30)))
             {
                 _systemVariables = GetDefaultSystemVariablesFromPathInfos();
                 // 自动保存重置后的配置
-                SaveDirectoryConfiguration(false);
+                SaveDirectoryConfiguration();
             }
             
             GUILayout.FlexibleSpace(); // 右侧弹性空间
             EditorGUILayout.EndHorizontal();
         }
         
-        public void SaveDirectoryConfiguration(bool isAutoSaving = false)
+        public void SaveDirectoryConfiguration()
         {
             // 保存到CoreEngine.Editor.UserSettings
             UserSettings.SetObject(Constants.NovaFramework_Installer_DIRECTORY_CONFIG_KEY, _systemVariables);
             
-            // 自动保存时不显示对话框
-            if (!isAutoSaving)
-            {
-                EditorUtility.DisplayDialog("保存成功", "系统变量配置已保存到UserSettings", "确定");
-            }
+            // 不自动导出配置，仅保存到UserSettings
         }
         
 
@@ -178,8 +183,7 @@ namespace NovaFramework.Editor.Installer
             {
                 _systemVariables = UserSettings.GetObject<Dictionary<string, string>>(Constants.NovaFramework_Installer_DIRECTORY_CONFIG_KEY);
             }
-            catch (Exception e)
-            { 
+            catch (Exception e) { 
                 string errorMessage = e.Message;
                 _systemVariables = DataManager.LoadSystemVariables();
             }

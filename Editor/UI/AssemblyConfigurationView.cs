@@ -32,6 +32,7 @@ namespace NovaFramework.Editor.Installer
         // 程序集配置相关
         private List<AssemblyDefinitionInfo> _assemblyConfigs;
         private Vector2 _assemblyScrollPos;
+        private Dictionary<string, bool> _controlFocusStates = new Dictionary<string, bool>(); // 跟踪每个控件的焦点状态
 
         public AssemblyConfigurationView()
         {
@@ -43,18 +44,14 @@ namespace NovaFramework.Editor.Installer
             // 对程序集配置按order排序
             _assemblyConfigs.Sort((x, y) => x.order.CompareTo(y.order));
             
-            // 增大帮助文本的字体
-            GUIStyle helpStyle = new GUIStyle(EditorStyles.helpBox);
-            helpStyle.fontSize = 20;
-            EditorGUILayout.BeginVertical(helpStyle);
+            // 使用标准的布局，不添加额外的边框
             EditorGUILayout.HelpBox("在此处可以配置项目自定义程序集", MessageType.Info);
-            EditorGUILayout.EndVertical();
             
-            // 添加间距
+            // 添加标准间距
             EditorGUILayout.Space(10);
             
-            // 使用固定高度而不是最大高度，确保为底部按钮预留空间
-            float availableHeight = Mathf.Max(300, Screen.height * 0.6f); // 使用屏幕高度的60%，但最少300像素
+            // 使用合理的高度以适应整体布局，为上下文留出空间
+            float availableHeight = Mathf.Max(200, Mathf.Min(400, Screen.height * 0.5f)); // 限制最大高度，使用屏幕高度的50%，但最少200像素，最多400像素
             _assemblyScrollPos = EditorGUILayout.BeginScrollView(_assemblyScrollPos, GUILayout.Height(availableHeight));
             
             for (int i = 0; i < _assemblyConfigs.Count; i++)
@@ -66,11 +63,14 @@ namespace NovaFramework.Editor.Installer
             EditorGUILayout.EndScrollView();
             
             // 添加底部间距
-            EditorGUILayout.Space(30);
+            EditorGUILayout.Space(20);
             
             // 操作按钮，水平排列并居中显示
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace(); // 左侧弹性空间
+            
+            // 添加按钮间的间距
+            GUILayout.Space(10);
             
             // 添加新程序集按钮，使用标准按钮样式
             if (GUILayout.Button("添加", GUILayout.Width(120), GUILayout.Height(30)))
@@ -83,13 +83,9 @@ namespace NovaFramework.Editor.Installer
                 };
                 _assemblyConfigs.Add(newConfig);
                 // 自动保存
-                SaveAssemblyConfiguration(false);
+                SaveAssemblyConfiguration();
             }
             
-            // 添加按钮间的间距
-            GUILayout.Space(10);
-            
-            // 移除手动保存按钮
             GUILayout.FlexibleSpace(); // 右侧弹性空间
             EditorGUILayout.EndHorizontal();
         }
@@ -104,19 +100,26 @@ namespace NovaFramework.Editor.Installer
             
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("名称:", GUILayout.Width(50));
+            
+            // 生成唯一的文本框ID
+            string nameTextFieldId = $"{config.name}_nameTextField";
+            GUI.SetNextControlName(nameTextFieldId);
+            
             string newName = EditorGUILayout.TextField(config.name, GUILayout.ExpandWidth(true));
             
-            // 检查名称是否改变，如果改变则自动保存
+            // 更新名称但不立即保存
             if (newName != config.name)
             {
                 config.name = newName;
-                SaveAssemblyConfiguration(false);
             }
+            
+            // 检查焦点状态变化
+            CheckAndHandleFocusChange(nameTextFieldId);
             
             if (GUILayout.Button("移除", GUILayout.Width(60)))
             {
                 _assemblyConfigs.RemoveAt(index);
-                SaveAssemblyConfiguration(false); // 自动保存
+                SaveAssemblyConfiguration(); // 自动保存
                 GUIUtility.ExitGUI(); // 退出GUI以防止索引错误
                 return;
             }
@@ -124,35 +127,46 @@ namespace NovaFramework.Editor.Installer
             
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("顺序:", GUILayout.Width(50));
+            
+            // 生成唯一的整数框ID
+            string orderFieldId = $"{config.name}_orderField";
+            GUI.SetNextControlName(orderFieldId);
+            
             int newOrder = EditorGUILayout.IntField(config.order, GUILayout.Width(100));
             
-            // 检查顺序是否改变，如果改变则自动保存
+            // 更新顺序但不立即保存
             if (newOrder != config.order)
             {
                 config.order = newOrder;
-                SaveAssemblyConfiguration(false);
             }
+            
+            // 检查焦点状态变化
+            CheckAndHandleFocusChange(orderFieldId);
             
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("标签:", GUILayout.Width(50));
-            var newTags = EditAssemblyTagsField(config.loadableStrategies);
             
-            // 检查标签是否改变，如果改变则自动保存
-            if (newTags != config.loadableStrategies)
-            {
-                config.loadableStrategies = newTags;
-                SaveAssemblyConfiguration(false);
-            }
+            // 生成唯一的标签选择器ID
+            string tagsFieldId = $"{config.name}_tagsField";
+            GUI.SetNextControlName(tagsFieldId);
+            
+            var newTags = EditAssemblyTagsField(config.loadableStrategies, () => {
+                // 标签选择时立即保存（因为标签选择器是弹出菜单，不会触发失去焦点事件）
+                SaveAssemblyConfiguration();
+            });
+            
+            // 检查焦点状态变化
+            CheckAndHandleFocusChange(tagsFieldId);
             
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.EndVertical();
         }
         
-        public void SaveAssemblyConfiguration(bool isAutoSaving = false)
+        public void SaveAssemblyConfiguration()
         {
             // 保存到CoreEngine.Editor.UserSettings
             if (_assemblyConfigs != null)
@@ -168,15 +182,13 @@ namespace NovaFramework.Editor.Installer
                 
                 UserSettings.SetObject(Constants.NovaFramework_Installer_ASSEMBLY_CONFIG_KEY, _assemblyConfigs);
                 
-                // 自动保存时不显示对话框
-                if (!isAutoSaving)
-                {
-                    EditorUtility.DisplayDialog("保存成功", "程序集配置已保存", "确定");
-                }
+                // 总是导出配置，但不选中文件
+                ExportConfigurationMenu.ExportConfiguration(false); // 总是不选中文件
             }
             else
             {
-                EditorUtility.DisplayDialog("错误", "无法保存：程序集配置为空", "确定");
+                // 无论是否自动保存，都不显示错误对话框
+                Debug.LogWarning("无法保存：程序集配置为空");
             }
         }
         
@@ -263,7 +275,7 @@ namespace NovaFramework.Editor.Installer
         }; // 可选标签
         
         // 多选标签编辑器
-        private static List<string> EditAssemblyTagsField(List<string> currentTags, params GUILayoutOption[] options)
+        private List<string> EditAssemblyTagsField(List<string> currentTags, System.Action onTagsChanged = null, params GUILayoutOption[] options)
         {
             // 创建下拉菜单内容
             string displayText = currentTags.Count > 0 ? string.Join(",", currentTags.ToArray()) : "请选择标签";
@@ -280,7 +292,22 @@ namespace NovaFramework.Editor.Installer
                     
                     // 创建一个临时变量来存储当前迭代的标签名
                     string currentTag = tag;
-                    menu.AddItem(new GUIContent(tag), isSelected, OnTagToggle, new TagToggleData { tags = currentTags, tag = currentTag });
+                    menu.AddItem(new GUIContent(tag), isSelected, (userData) => {
+                        var tagData = (TagToggleData)userData;
+                        if (tagData.tags.Contains(tagData.tag))
+                        {
+                            // 移除标签
+                            tagData.tags.Remove(tagData.tag);
+                        }
+                        else
+                        {
+                            // 添加标签
+                            tagData.tags.Add(tagData.tag);
+                        }
+                        
+                        // 调用标签变更回调
+                        tagData.onTagsChanged?.Invoke();
+                    }, new TagToggleData { tags = currentTags, tag = currentTag, onTagsChanged = onTagsChanged });
                 }
                 
                 menu.ShowAsContext();
@@ -294,6 +321,30 @@ namespace NovaFramework.Editor.Installer
         {
             public List<string> tags;
             public string tag;
+            public System.Action onTagsChanged;
+        }
+        
+        // 检查并处理控件焦点状态变化
+        private void CheckAndHandleFocusChange(string controlId)
+        {
+            // 初始化焦点状态字典
+            if (!_controlFocusStates.ContainsKey(controlId))
+            {
+                _controlFocusStates[controlId] = false;
+            }
+            
+            // 检查焦点状态变化
+            bool hasFocus = GUI.GetNameOfFocusedControl() == controlId;
+            bool previousFocusState = _controlFocusStates[controlId];
+            
+            // 如果之前有焦点，现在没有焦点，则说明失去了焦点
+            if (previousFocusState && !hasFocus && Event.current.type == EventType.Repaint)
+            {
+                SaveAssemblyConfiguration();
+            }
+            
+            // 更新焦点状态
+            _controlFocusStates[controlId] = hasFocus;
         }
         
         // 处理标签切换的回调函数
